@@ -9,7 +9,7 @@ import uvicorn
 import webrtcvad
 from websockets.sync.client import connect
 
-from config import WebSocketConfig
+from config import LoggingConfig, WebSocketConfig
 from helper.custom_sts_handler import LLM, Speech2Text, Text2Speech
 from helper.llm_backends.api import APIBackend
 from helper.PROMPT import SYSTEM_PROMPT
@@ -224,7 +224,7 @@ if __name__ == "__main__":
         level=logging.INFO,
         format="[%(levelname)s] - %(asctime)s - %(message)s - %(pathname)s:%(lineno)d",
         filemode="w+",
-        filename="call center.log",
+        filename=LoggingConfig().call_center_log_file,
         datefmt="%y-%m-%d %H:%M:%S",
     )
     console_handler = logging.StreamHandler(sys.stdout)
