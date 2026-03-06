@@ -10,10 +10,9 @@ from helper.llm_backends.models import LLMBackend
 
 
 class PostChatMessageRequest(BaseModel):
+    query: str
     session_id: int | str
     user_id: int | str  # tg user ID or call ID
-    message: str
-    streaming: bool = False
 
     @field_serializer("user_id")
     def serialize_user_id(self, value: int) -> str:
@@ -72,17 +71,17 @@ class APIBackend(LLMBackend):
             raise ValueError("Missing user_id")
         try:
             request = PostChatMessageRequest(
+                query=message if message else "",
                 session_id=user_id,
                 user_id=user_id,
-                message=message if message else "",
             )
             res = await self.http_client.post(
-                f"{self.server_endpoint_url}/chat",
+                f"{self.server_endpoint_url}/chat/",
                 json=request.model_dump(mode="json"),
             )
             res.raise_for_status()
             self.logger.info(f"Chat response: {res.headers}")
-            return res.json().get("response", "No response")
+            return res.json().get("result", "No response")
 
         except Exception as e:
             self.logger.error(f"Chat failed: {e}", exc_info=True)
