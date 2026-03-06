@@ -87,5 +87,12 @@ class OpenaiConfig(BaseSettings):
     model_config = config_factory("OPENAI_")
 
 
+class LLMServerConfig(BaseSettings):
+    api_url: str = "http://localhost:8002"
+    api_version: int = 1
+
+    model_config = config_factory("OPENAI_")
+
+
 if __name__ == "__main__":
     print(SIPConfig().model_dump())

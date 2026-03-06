@@ -9,7 +9,7 @@ import uvicorn
 import webrtcvad
 from websockets.sync.client import connect
 
-from config import LoggingConfig, WebSocketConfig
+from config import LLMServerConfig, LoggingConfig, WebSocketConfig
 from helper.custom_sts_handler import LLM, Speech2Text, Text2Speech
 from helper.llm_backends.api import APIBackend
 from helper.PROMPT import SYSTEM_PROMPT
@@ -24,6 +24,7 @@ from web_chat import broadcast_message
 
 ws_cmd = WSCommandHelper()
 wav_handler = WavHandler()
+llm_server_config = LLMServerConfig()
 logger = logging.getLogger()
 
 
@@ -91,7 +92,11 @@ def handle_bye(session: RTPSession, call_id: str) -> None:
 
 async def main() -> None:
     session = RTPSession()
-    llm_backend = APIBackend(SYSTEM_PROMPT)
+    llm_backend = APIBackend(
+        api_version=llm_server_config.api_version,
+        server_endpoint_url=llm_server_config.api_url,
+        system_prompt=SYSTEM_PROMPT,
+    )
     llm_handler = LLM(llm_backend)
     stt = Speech2Text()
     tts = Text2Speech()

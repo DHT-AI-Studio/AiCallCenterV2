@@ -11,10 +11,15 @@ services:
       - SIP_LOCAL_IP=${SIP_LOCAL_IP:-0.0.0.0}
       - WS_HOST=${WS_HOST:-0.0.0.0}
       - LOGGING_SIP_LOG_FILE=/app/output/sip_server.log
+      - LOGGING_CALL_CENTER_LOG_FILE=/app/output/call_center.log
+      - LLM_BACKEND_API_URL=http://localhost:8002
+      - LLM_BACKEND_API_VERSION=1
 
     # Network mode: host is required for SIP/RTP to work properly
     # SIP/RTP requires symmetric NAT traversal and direct UDP port access
     network_mode: host
+
+    command: ["/bin/bash", "./run.sh"]
 
     volumes:
       - /opt/home/matthew/Desktop/docker/sip_server/app/voices:/app/voices:ro
@@ -35,30 +40,6 @@ services:
     #   retries: 3
     #   start_period: 30s
 
-  call-center:
-    image: sip-server-v2:latest
-    container_name: call-center
-    restart: unless-stopped
-
-    command: ["python", "call_center.py"]
-
-    env_file:
-      - .env
-    environment:
-      - PYTHONUNBUFFERED=1
-      - WS_URL=${WS_URL:-ws://localhost:8080}
-      - LOGGING_CALL_CENTER_LOG_FILE=/app/output/call_center.log
-
-    network_mode: host
-
-    depends_on:
-      sip-server:
-        condition: service_started
-
-    volumes:
-      - /opt/home/matthew/Desktop/docker/sip_server/app/voices:/app/voices:ro
-      - /opt/home/matthew/Desktop/docker/sip_server/app/output:/app/output
-
     deploy:
       resources:
         reservations:
@@ -67,13 +48,37 @@ services:
               count: 1
               capabilities: [gpu]
 
-    # Logging configuration
-    # logging:
-    #   driver: json-file
-    #   options:
-    #     max-size: "10m"
-    #     max-file: "3"
+  # call-center:
+  #   image: sip-server-v2:latest
+  #   container_name: call-center
+  #   restart: unless-stopped
 
-volumes:
-  huggingface-cache:
-    driver: local
+  #   command: ["python", "call_center.py"]
+
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - PYTHONUNBUFFERED=1
+  #     - WS_URL=${WS_URL:-ws://localhost:8080}
+  #     - LOGGING_CALL_CENTER_LOG_FILE=/app/output/call_center.log
+
+  #   network_mode: host
+
+  #   depends_on:
+  #     sip-server:
+  #       condition: service_started
+
+  #   volumes:
+  #     - /opt/home/matthew/Desktop/docker/sip_server/app/voices:/app/voices:ro
+  #     - /opt/home/matthew/Desktop/docker/sip_server/app/output:/app/output
+
+  #   Logging configuration
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+
+# volumes:
+#   huggingface-cache:
+#     driver: local

@@ -29,21 +29,26 @@ RUN uv sync --frozen --no-dev
 # =============================================================================
 # Stage 2: Runtime - Final lightweight image
 # =============================================================================
-FROM python:3.12-slim AS runtime
+FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04 AS runtime
 
 # Labels
 LABEL org.opencontainers.image.title="SIP Relay Server v2"
 LABEL org.opencontainers.image.description="AI-powered SIP relay server with STT/LLM/TTS pipeline"
 LABEL org.opencontainers.image.version="0.2.0"
 
-# Install runtime dependencies
+# Install Python 3.12 and runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.12 \
+    python3.12-venv \
+    python3-pip \
     ffmpeg \
     libsndfile1 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /usr/bin/python3.12 /usr/local/bin/python \
+    && ln -sf /usr/bin/python3.12 /usr/local/bin/python3
 
 # Create non-root user for security
-RUN useradd -m -u 1000 sipserver
+RUN useradd -m -u 1001 sipserver
 
 # Set working directory
 WORKDIR /app

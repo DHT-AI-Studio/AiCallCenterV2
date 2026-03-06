@@ -27,18 +27,19 @@ class PostChatMessageRequest(BaseModel):
 class APIBackend(LLMBackend):
     def __init__(
         self,
+        server_endpoint_url: str | None = None,
+        api_version: int | None = None,
         system_prompt: str | None = None,
-        server_endpoint_url: str = "http://192.168.157.165:8004",
         timeout: float = 30.0,
-        api_version: int = 1,
     ) -> None:
         self.logger = logging.getLogger("API_LLM")
         start_time = time.time()
 
         self.logger = logging.getLogger(__name__)
         self.timeout = timeout
-        self.api_version = api_version
-        self.server_endpoint_url = f"{server_endpoint_url}/api/v{api_version}"
+        self.llm_endpoint_url = server_endpoint_url or "http://localhost:8002"
+        self.api_version = api_version if api_version is not None else 1
+        self.server_endpoint_url = f"{self.llm_endpoint_url}/api/v{self.api_version}"
         self.http_client = httpx.AsyncClient(timeout=self.timeout)
 
         init_time = time.time() - start_time
