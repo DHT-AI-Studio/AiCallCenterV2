@@ -61,14 +61,13 @@ ENV PATH="/app/.venv/bin:$PATH"
 ENV VIRTUAL_ENV="/app/.venv"
 
 # Copy application code
-COPY --chown=sipserver:sipserver . .
+COPY . .
 
 # Create required directories
-RUN mkdir -p /app/output/transcode /app/output/response /app/output/converted /app/recording \
-    && chown -R sipserver:sipserver /app/output /app/recording
+RUN mkdir -p /app/output/transcode /app/output/response /app/output/converted /app/recording
 
 # Ensure voices directory exists (should be volume-mounted or copied)
-RUN mkdir -p /app/voices && chown -R sipserver:sipserver /app/voices
+RUN mkdir -p /app/voices
 
 # Health check - verify Python and key modules are importable
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
