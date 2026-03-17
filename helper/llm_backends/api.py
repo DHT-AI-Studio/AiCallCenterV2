@@ -16,7 +16,7 @@ class ResponseStyle(StrEnum):
 
 
 class PostChatMessageRequest(BaseModel):
-    query: str
+    question: str
     session_id: str
     user_id: str
 
@@ -78,7 +78,7 @@ class APIBackend(LLMBackend):
             raise ValueError("Missing user_id")
         try:
             request = PostChatMessageRequest(
-                query=message if message else "",
+                question=message if message else "",
                 session_id=user_id,
                 user_id=user_id,
             )
@@ -144,7 +144,7 @@ class CacheServerAPIBackend(LLMBackend):
             raise ValueError("Missing user_id")
         try:
             request = PostChatMessageRequest(
-                query=message if message else "",
+                question=message if message else "",
                 session_id=user_id,
                 user_id=user_id,
             ).model_dump(mode="json")
