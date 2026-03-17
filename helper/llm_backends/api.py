@@ -19,6 +19,7 @@ class PostChatMessageRequest(BaseModel):
     question: str
     session_id: str
     user_id: str
+    language: str
 
     @field_serializer("user_id")
     def serialize_user_id(self, value: int) -> str:
@@ -80,6 +81,7 @@ class APIBackend(LLMBackend):
                 question=message if message else "",
                 session_id=user_id,
                 user_id=user_id,
+                language=language,
             )
             res = await self.http_client.post(
                 f"{self.server_endpoint_url}/chat/",
@@ -161,6 +163,7 @@ class CacheServerAPIBackend(LLMBackend):
                 question=message if message else "",
                 session_id=user_id,
                 user_id=user_id,
+                language=language,
             ).model_dump(mode="json")
             request["style"] = ResponseStyle.CONCISE
 
