@@ -148,20 +148,11 @@ class Text2Speech:
     VOICE_MAP = {
         "en": "./voices/en/en_US-lessac-medium.onnx",
         "zh": "./voices/zh/zh_CN-huayan-medium.onnx",
-        "zh-tw": "./voices/zh/zh_CN-huayan-medium.onnx",
-        "es": "./voices/es/es_ES-sharvard-medium.onnx",
-        "fr": "./voices/fr/fr_FR-mls-medium.onnx",
-        "de": "./voices/de/de_DE-thorsten-medium.onnx",
-        "ar": "./voices/ar/ar_JO-kareem-medium.onnx",
     }
 
     LANG_CODE_MAP = {
         "en": "en",
         "zh": "zh",
-        "es": "es",
-        "fr": "fr",
-        "de": "de",
-        "ar": "ar",
     }
 
     def __init__(self, default_lang: str = "zh", min_confidence: float = 0.5):

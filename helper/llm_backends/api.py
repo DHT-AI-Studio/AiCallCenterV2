@@ -131,11 +131,26 @@ class CacheServerAPIBackend(LLMBackend):
     ) -> str:
         self.logger.info(messages)
         user_id = kwargs.get("user_id")
-        message = (
-            messages[0]["content"]
-            + f"/no_think\n您必須使用此語言進行輸出:{language} \n用戶提問:"
-            + messages[-1]["content"]
-        )
+
+        if language == "zh":
+            message = (
+                messages[0]["content"]
+                + f"/no_think\n您必須使用此語言進行輸出:{language} \n用戶提問:"
+                + messages[-1]["content"]
+            )
+        elif language == "en":
+            message = (
+                messages[0]["content"]
+                + f"/no_think\nYou must respond in this language:{language} \nUser question:"
+                + messages[-1]["content"]
+            )
+        else:
+            message = (
+                messages[0]["content"]
+                + f"/no_think\n您必須使用此語言進行輸出:{language} \n用戶提問:"
+                + messages[-1]["content"]
+            )
+
         if not self.http_client:
             raise RuntimeError("Client not started")
 
