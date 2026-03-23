@@ -8,15 +8,7 @@ services:
       - .env
     environment:
       - PYTHONUNBUFFERED=1
-      # - SIP_LOCAL_IP=${SIP_LOCAL_IP:-0.0.0.0}
-      # - WS_HOST=${WS_HOST:-0.0.0.0}
-      # - LOGGING_SIP_LOG_FILE=/app/output/sip_server.log
-      # - LOGGING_CALL_CENTER_LOG_FILE=/app/output/call_center.log
-      # - LLM_BACKEND_API_URL=http://localhost:8002
-      # - LLM_BACKEND_API_VERSION=1
 
-    # Network mode: host is required for SIP/RTP to work properly
-    # SIP/RTP requires symmetric NAT traversal and direct UDP port access
     network_mode: host
 
     command: ["/bin/bash", "./run.sh"]
@@ -27,19 +19,6 @@ services:
       - /opt/home/matthew/Desktop/docker/sip_server/app/recording:/app/recording
       - /opt/home/matthew/Desktop/docker/sip_server/app/output/transcode/greeting.wav:/app/output/transcode/greeting.wav:ro
 
-    # healthcheck:
-    #   test:
-    #     [
-    #       "CMD",
-    #       "python",
-    #       "-c",
-    #       "import socket; s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM); s.bind(('', 0)); s.close()",
-    #     ]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 30s
-
     deploy:
       resources:
         reservations:
@@ -47,38 +26,3 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-
-  # call-center:
-  #   image: sip-server-v2:latest
-  #   container_name: call-center
-  #   restart: unless-stopped
-
-  #   command: ["python", "call_center.py"]
-
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - PYTHONUNBUFFERED=1
-  #     - WS_URL=${WS_URL:-ws://localhost:8080}
-  #     - LOGGING_CALL_CENTER_LOG_FILE=/app/output/call_center.log
-
-  #   network_mode: host
-
-  #   depends_on:
-  #     sip-server:
-  #       condition: service_started
-
-  #   volumes:
-  #     - /opt/home/matthew/Desktop/docker/sip_server/app/voices:/app/voices:ro
-  #     - /opt/home/matthew/Desktop/docker/sip_server/app/output:/app/output
-
-  #   Logging configuration
-  #   logging:
-  #     driver: json-file
-  #     options:
-  #       max-size: "10m"
-  #       max-file: "3"
-
-# volumes:
-#   huggingface-cache:
-#     driver: local

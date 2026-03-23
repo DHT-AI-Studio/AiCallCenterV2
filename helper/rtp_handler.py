@@ -449,9 +449,6 @@ class RTPHandler:
     def send_packet(self, packet: bytes) -> None:
         self.sender.send_rtp_packet(packet)
 
-    # def recv_packet(self) -> RTPPacket | None:
-    #     return self.receiver.get_rtp_packet()
-
     def pause_sending(self) -> None:
         self.sender.pause()
 

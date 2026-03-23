@@ -370,15 +370,6 @@ class SIPRTPSession:
 
         self.rtp_handle.send_packet(audio_data)
 
-    # def recv_audio(self) -> bytes | None:
-    #     if not self.rtp_handle:
-    #         raise RuntimeError("Call handle_invite() first")
-
-    #     audio_packet = self.rtp_handle.recv_packet()
-    #     if audio_packet:
-    #         return audio_packet.payload
-    #     return
-
     def stop_and_save(self, output_path: Path | None = None):
         """
         Stop RTP session and optionally save received audio.

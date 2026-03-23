@@ -118,7 +118,9 @@ class WavHandler:
     def wav2base64(self, wav_path: Path) -> str:
         audio = AudioSegment.from_file(wav_path)
         normalized = self._normalize_audio(audio)
-        return base64.b64encode(normalized.raw_data).decode("ascii")  # pyright: ignore[reportArgumentType]
+        return base64.b64encode(
+            normalized.raw_data  # pyright: ignore[reportArgumentType]
+        ).decode("ascii")
 
     def convert_wav(self, input_path: Path, output_path: Path) -> None:
         audio = AudioSegment.from_file(input_path)

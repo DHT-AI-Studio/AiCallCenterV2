@@ -1,3 +1,5 @@
+# Code by DHT@Matthew
+
 import logging
 
 from model.sip_message import (
@@ -124,7 +126,9 @@ class SipMessageParser:
 
         return SDPMessage(
             **session_data,
-            media_descriptions=(media_descriptions if media_descriptions else None),  # pyright: ignore[reportCallIssue]
+            media_descriptions=(  # pyright: ignore[reportCallIssue]
+                media_descriptions if media_descriptions else None
+            ),
         )
 
     def _parse_sdp_fields(self, text: str) -> dict[str, str | list[str] | int]:
