@@ -40,6 +40,8 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 COPY . .
+COPY voices/ /app/voices/
+COPY output/transcode/greeting.wav /app/output/transcode/greeting.wav
 RUN mkdir -p /app/output/transcode /app/output/response /app/output/converted /app/recording /app/voices
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

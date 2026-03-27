@@ -14,10 +14,10 @@ services:
     command: ["/bin/bash", "./run.sh"]
 
     volumes:
-      - /opt/home/matthew/Desktop/docker/sip_server/app/voices:/app/voices:ro
       - /opt/home/matthew/Desktop/docker/sip_server/app/output:/app/output
       - /opt/home/matthew/Desktop/docker/sip_server/app/recording:/app/recording
-      - /opt/home/matthew/Desktop/docker/sip_server/app/output/transcode/greeting.wav:/app/output/transcode/greeting.wav:ro
+      - /opt/home/matthew/Desktop/docker/sip_server/app/voices:/app/voices:ro
+      # - /opt/home/matthew/Desktop/docker/sip_server/app/output/transcode/greeting.wav:/app/output/transcode/greeting.wav:ro
 
     deploy:
       resources:
