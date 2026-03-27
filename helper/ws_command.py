@@ -29,7 +29,7 @@ class WSCommandHelper:
             case s if s.startswith("CALL:"):
                 self.logger.debug("[WS Parser] Match Call")
 
-                _, phone_number = raw_command.split(":")
+                _, phone_number = raw_command.split(":", maxsplit=1)
 
                 # Validate phone number format (support international and Taiwan numbers)
                 # Allow: digits only, optional + prefix, min 7 digits, max 15 digits

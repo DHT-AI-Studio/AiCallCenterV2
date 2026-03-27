@@ -229,9 +229,24 @@ class RelayServer:
             reason = response.status_line.reason_phrase
             self.logger.warning(f"Call {call_id} failed: {status_code} {reason}")
 
-            # Send ACK for error response (transaction cleanup)
-            resp = self._build_response(response, "603 Decline")
-            self._send_response(addr, resp, socket)
+            # Send ACK for error response (RFC 3261 §17.1.1.3 transaction cleanup)
+            cseq_number = cseq.split()[0]
+            ack_uri = f"sip:{addr[0]}:{addr[1]}"
+            ack_msg = "\r\n".join(
+                [
+                    f"ACK {ack_uri} SIP/2.0",
+                    f"Via: SIP/2.0/UDP {self.local_ip}:{self.recv_port};branch=z9hG4bK-{uuid.uuid4().hex[:16]}",
+                    f"From: {response.headers.from_}",
+                    f"To: {response.headers.to}",
+                    f"Call-ID: {call_id}",
+                    f"CSeq: {cseq_number} ACK",
+                    "Max-Forwards: 70",
+                    "Content-Length: 0",
+                    "",
+                    "",
+                ]
+            )
+            self._send_response(addr, ack_msg, socket)
 
             # Cleanup
             if call_id in self.sessions:

@@ -42,8 +42,8 @@ class WebSocketConfig(BaseSettings):
 
 
 class RTPConfig(BaseSettings):
-    start_post: int = 31000
-    end_post: int = 31010
+    start_port: int = 31000
+    end_port: int = 31010
     send_queue_max: int = 500
     recv_queue_max: int = 500
 
