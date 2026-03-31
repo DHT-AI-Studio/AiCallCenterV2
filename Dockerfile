@@ -40,7 +40,7 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 COPY . .
-COPY voices/ /app/voices/
+# COPY voices/ /app/voices/
 COPY output/transcode/greeting.wav /app/output/transcode/greeting.wav
 RUN mkdir -p /app/output/transcode /app/output/response /app/output/converted /app/recording /app/voices
 
