@@ -16,13 +16,13 @@ A Python-based SIP relay server with advanced AI integration for intelligent voi
 ### AI & Speech Processing
 
 - **Speech-to-Text** - Faster-Whisper for local transcription (multi-language)
-- **Text-to-Speech** - Piper TTS with multi-language voice models
+- **Text-to-Speech** - Qwen3-TTS with custom voice and multilingual support
 - **LLM Integration** - Three backend options:
   - API Backend (remote HTTP LLM server)
   - Local Backend (Qwen3 model on GPU)
   - OpenAI Backend (GPT-4o-mini)
 - **Voice Activity Detection (VAD)** - Silero VAD for speech boundary detection
-- **Language Detection** - Automatic language identification (langid)
+
 
 ### Integration & Control
 
@@ -65,7 +65,7 @@ A Python-based SIP relay server with advanced AI integration for intelligent voi
 │  │     Call Center (AI Mode)               │                    │
 │  │  ┌─────────┐ ┌─────────┐ ┌─────────┐    │                    │
 │  │  │   STT   │ │   LLM   │ │   TTS   │    │                    │
-│  │  │(Whisper)│ │(Backend)│ │ (Piper) │    │                    │
+│  │  │(Whisper)│ │(Backend)│ │(Qwen3)  │    │                    │
 │  │  └─────────┘ └─────────┘ └─────────┘    │                    │
 │  └─────────────────────────────────────────┘                    │
 │                                                                 │
@@ -102,7 +102,7 @@ SIP_server_v2/
 │   ├── ws_helper.py           # WebSocket server
 │   ├── ws_command.py          # WebSocket command helpers
 │   ├── wav_handler.py         # WAV file operations
-│   ├── custom_sts_handler.py  # Faster-Whisper STT + Piper TTS
+│   ├── custom_sts_handler.py  # Faster-Whisper STT + Qwen3-TTS
 │   ├── openai_sts_handler.py  # OpenAI STT/TTS (legacy)
 │   ├── PROMPT.py              # System prompt for AI
 │   └── llm_backends/
@@ -156,13 +156,13 @@ bitsandbytes>=0.48.2        # Quantization
 faster-whisper>=1.2.1       # Speech-to-text
 huggingface-hub>=0.36.0     # Model downloading
 jieba>=0.42.1               # Chinese tokenization
-langid>=1.1.6               # Language detection
 openai>=2.8.1               # OpenAI API client
-piper-tts>=1.3.0            # Text-to-speech
 pydantic>=2.12.4            # Data validation
 pydub>=0.25.1               # Audio processing
 python-dotenv>=1.2.1        # .env support
+qwen-tts                    # Text-to-speech (Qwen3-TTS)
 silero-vad>=6.2.0           # Voice activity detection
+soundfile                   # Audio file I/O
 transformers>=4.51.3        # HuggingFace models
 websockets>=15.0.1          # WebSocket protocol
 ```

@@ -2,18 +2,15 @@
 
 import logging
 import time
-import wave
 from pathlib import Path
 from typing import Literal
 
-import langid
+import soundfile as sf
 import torch
 from faster_whisper import WhisperModel
-from piper import PiperVoice
+from qwen_tts import Qwen3TTSModel
 
-from helper.llm_backends.api import APIBackend
-from helper.llm_backends.llm_backend import LLM
-from helper.PROMPT import SYSTEM_PROMPT
+torch.set_float32_matmul_precision("high")
 
 
 class Speech2Text:
@@ -145,81 +142,68 @@ class Speech2Text:
 
 
 class Text2Speech:
-    VOICE_MAP = {
-        "en": "./voices/en/en_US-lessac-medium.onnx",
-        "zh": "./voices/zh/zh_CN-huayan-medium.onnx",
-    }
+    MODEL_ID = "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"
 
-    LANG_CODE_MAP = {
-        "en": "en",
-        "zh": "zh",
-    }
-
-    def __init__(self, default_lang: str = "zh", min_confidence: float = 0.5):
+    def __init__(
+        self,
+        device: str = "cuda:0",
+        dtype: torch.dtype = torch.bfloat16,
+        speaker: str = "Serena",
+        language: str = "Chinese",
+        instruct: str = "用溫柔親切的客服語氣說",
+    ):
         self.logger = logging.getLogger("TTS")
-        if default_lang not in self.VOICE_MAP:
-            raise ValueError(f"Invalid default_lang: {default_lang}")
+        self.speaker = speaker
+        self.language = language
+        self.instruct = instruct
 
-        self.default_lang = default_lang
-        self.min_confidence = min_confidence
-        self._voices = {}
-
-    def detect_language(self, text: str) -> tuple[str, float]:
-        text = text.strip()
-
-        if not text or not any(c.isalpha() for c in text):
-            return self.default_lang, 0.0
-
-        detected_lang, confidence = langid.classify(text)
-
-        if detected_lang in self.LANG_CODE_MAP:
-            mapped_lang = self.LANG_CODE_MAP[detected_lang]
-        else:
-            return self.default_lang, 0.0
-
-        if confidence < self.min_confidence:
-            return self.default_lang, confidence
-
-        return mapped_lang, confidence
-
-    def _get_voice(self, lang: str) -> PiperVoice:
-        if lang not in self.VOICE_MAP:
-            raise ValueError(
-                f"Unsupported Lang: {lang}, Supported: {list(self.VOICE_MAP.keys())}"
-            )
-
-        if lang not in self._voices:
-            model_name = self.VOICE_MAP[lang]
-            self.logger.info(f"Loading {lang} model: {model_name}...")
-            self._voices[lang] = PiperVoice.load(model_name)
-
-        return self._voices[lang]
+        self.logger.info(f"Loading Qwen3TTS model: {self.MODEL_ID}")
+        start_time = time.time()
+        self.model = Qwen3TTSModel.from_pretrained(
+            self.MODEL_ID,
+            device_map=device,
+            dtype=dtype,
+            attn_implementation="flash_attention_2",
+        )
+        self.logger.info(f"Model loaded in {time.time() - start_time:.2f}s")
 
     def generate(
-        self, text: str, output_path: str | Path, lang: str | None = None
-    ) -> tuple[str, float]:
-        confidence = 1.0
+        self,
+        text: str,
+        output_path: str | Path,
+        top_k: int = 20,
+        top_p: float = 0.5,
+        temperature: float = 0.3,
+        max_new_tokens: int = 1024,
+    ) -> None:
+        self.logger.info(f"Synthesizing: {text[:50]}...")
+        start_time = time.time()
 
-        if lang is None:
-            lang, confidence = self.detect_language(text)
-        elif lang not in self.VOICE_MAP:
-            self.logger.warning(
-                f"Unsupported language got: {lang}, using default: {self.default_lang}."
-            )
-            lang = self.default_lang
+        wavs, sr = self.model.generate_custom_voice(
+            text=text,
+            language=self.language,
+            speaker=self.speaker,
+            instruct=self.instruct,
+            top_k=top_k,
+            top_p=top_p,
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            non_streaming_mode=False,
+        )
 
-        self.logger.info(f"Synthesizing in {lang} (confidence: {confidence:.2f})...")
-        voice = self._get_voice(lang)
-        with wave.open(str(output_path), "wb") as f:
-            voice.synthesize_wav(text, f)
-
-        self.logger.info(f"TTS audio saved to: {output_path}")
-        return lang, confidence
+        sf.write(str(output_path), wavs[0], sr)
+        self.logger.info(
+            f"TTS audio saved to {output_path} in {time.time() - start_time:.2f}s"
+        )
 
 
 # test
 async def main() -> None:
     import sys
+
+    # from helper.llm_backends.api import APIBackend
+    # from helper.llm_backends.llm_backend import LLM
+    # from helper.PROMPT import SYSTEM_PROMPT
 
     logging.basicConfig(
         level=logging.INFO,
@@ -232,33 +216,33 @@ async def main() -> None:
     logger = logging.getLogger()
     logger.addHandler(console_handler)
 
-    llm_backend = APIBackend(system_prompt=SYSTEM_PROMPT)
-    stt = Speech2Text()
-    llm = LLM(backend=llm_backend)
+    # llm_backend = APIBackend(system_prompt=SYSTEM_PROMPT)
+    # stt = Speech2Text()
+    # llm = LLM(backend=llm_backend)
     tts = Text2Speech()
 
     print("Start testing...")
-    st_time = time.time()
-    incoming_voice, _ = stt.transcribe("./audio.wav")
-    print(f"Transcription time: {time.time() - st_time:.2f}s")
+    # st_time = time.time()
+    # incoming_voice, _ = stt.transcribe("./audio.wav")
+    # print(f"Transcription time: {time.time() - st_time:.2f}s")
+
+    # st_time = time.time()
+    # response = await llm.generate_response(incoming_voice, user_id=1234)
+    # print(response)
+    # print(f"LLM time: {time.time() - st_time:.2f}s")
 
     st_time = time.time()
-    response = await llm.generate_response(incoming_voice, user_id=1234)
-    print(response)
-    print(f"LLM time: {time.time() - st_time:.2f}s")
-
-    st_time = time.time()
-    tts.generate(response, "./output/response/demo1.wav")
+    tts.generate("可以再多介绍一下自己吗", "./output/response/demo1.wav")
     print(f"TTS time: {time.time() - st_time:.2f}s")
 
-    st_time = time.time()
-    response = await llm.generate_response(incoming_voice, user_id=1234)
-    print(response)
-    print(f"LLM time: {time.time() - st_time:.2f}s")
+    # st_time = time.time()
+    # response = await llm.generate_response(incoming_voice, user_id=1234)
+    # print(response)
+    # print(f"LLM time: {time.time() - st_time:.2f}s")
 
-    st_time = time.time()
-    tts.generate(response, "./output/response/demo2.wav")
-    print(f"TTS time: {time.time() - st_time:.2f}s")
+    # st_time = time.time()
+    # tts.generate(response, "./output/response/demo2.wav")
+    # print(f"TTS time: {time.time() - st_time:.2f}s")
 
 
 if __name__ == "__main__":
