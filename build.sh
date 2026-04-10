@@ -5,7 +5,8 @@ git pull
 
 IMAGE_NAME="sip-server-v2"
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-IMAGE_TAG="${1:-$([ "$BRANCH" = "main" ] && echo "latest" || echo "$BRANCH")}"
+BRANCH_TAG="${BRANCH//\//-}"
+IMAGE_TAG="${1:-$([ "$BRANCH" = "main" ] && echo "latest" || echo "$BRANCH_TAG")}"
 
 echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
 docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
