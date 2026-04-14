@@ -79,6 +79,9 @@ class LocalBackend(LLMBackend):
 
         response_ids = outputs[0][new_tokens.shape[1] :]
         response = self.tokenizer.decode(response_ids, skip_special_tokens=True)
+        if not isinstance(response, str):
+            raise Exception("Error: No response error")
+
         response = response.replace("<think>", "").replace("</think>", "").strip()
 
         self.history.append({"role": "assistant", "content": response})

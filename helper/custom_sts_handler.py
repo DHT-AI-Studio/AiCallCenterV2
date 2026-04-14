@@ -218,7 +218,7 @@ class STT_VibeVoice:
         self.logger.info(f"Transcribing: {audio_path}")
         start_time = time.time()
 
-        result: dict = self.pipe(str(audio_path))  # type: ignore[assignment]
+        result: dict = self.pipe(str(audio_path))  # ty:ignore[invalid-assignment]
         text = result["text"].strip()
         lang, _ = langid.classify(text)
 
@@ -228,6 +228,12 @@ class STT_VibeVoice:
         )
 
         return text, lang
+
+
+class STT_Qwen3:
+    MODEL_ID = "Qwen/Qwen3-ASR-1.7B"
+
+    def __init__(self) -> None: ...
 
 
 class TTS_Qwen3:
