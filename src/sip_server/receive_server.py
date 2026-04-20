@@ -36,6 +36,8 @@ class RelayServer:
 
         self.logger = logging.getLogger("SIPServer")
 
+        self.logger.info(f"Starting service in {self.host=}")
+
         self.sip_message_parser = SipMessageParser()
 
         self.sessions: dict[str, SIPRTPSession] = {}
