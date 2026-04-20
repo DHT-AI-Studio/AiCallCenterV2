@@ -105,6 +105,9 @@ class SipMessageParser:
 
         session_data = self._parse_sdp_fields(session_text)
 
+        def _str_or_none(v: object) -> str | None:
+            return str(v) if v is not None else None
+
         media_descriptions = []
         if media_text:
             media_blocks = media_text.split("\nm=")
@@ -118,20 +121,16 @@ class SipMessageParser:
                 media_descriptions.append(
                     MediaDescription(
                         m=str(media_data.get("media", "")),
-                        i=str(media_data.get("title")),
-                        c=str(media_data.get("connection_info")),
-                        k=str(media_data.get("encryption_key")),
+                        i=_str_or_none(media_data.get("title")),
+                        c=_str_or_none(media_data.get("connection_info")),
+                        k=_str_or_none(media_data.get("encryption_key")),
                     )
                 )
 
-        return SDPMessage(
-            **session_data,
-            media_descriptions=(  # pyright: ignore[reportCallIssue]
-                media_descriptions if media_descriptions else None
-            ),
-        )
+        session_data["media_descriptions"] = media_descriptions if media_descriptions else None  # type: ignore[assignment]
+        return SDPMessage.model_validate(session_data)
 
-    def _parse_sdp_fields(self, text: str) -> dict[str, str | list[str] | int]:
+    def _parse_sdp_fields(self, text: str) -> dict[str, str | list[str] | int | list[MediaDescription] | None]:
         """
         Parse SDP fields from text.
 
@@ -174,7 +173,7 @@ class SipMessageParser:
             field_name, field_type, is_list = FIELD_SPECS[prefix]
 
             try:
-                if isinstance(field_type, int):
+                if field_type is int:
                     parsed_value = int(value)
                 elif field_type == "TimeDescription":
                     parsed_value = TimeDescription(t=value)
@@ -189,7 +188,7 @@ class SipMessageParser:
             except (ValueError, TypeError) as e:
                 self.logger.error(f"Failed to parse {prefix}={value}: {e}")
 
-                if isinstance(field_type, int):
+                if field_type is int:
                     result[field_name] = 0
                 elif not is_list:
                     result[field_name] = ""
