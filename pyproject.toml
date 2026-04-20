@@ -10,7 +10,6 @@ dependencies = [
   "gradio>=6.12.0",
   "jieba>=0.42.1",
   "langid>=1.1.6",
-  "openai>=2.8.1",
   "pydantic>=2.12.4",
   "pydantic-settings>=2.12.0",
   "pydub>=0.25.1",
