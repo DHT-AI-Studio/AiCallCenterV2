@@ -3261,7 +3261,6 @@ dependencies = [
     { name = "silero-vad" },
     { name = "torchcodec" },
     { name = "voxcpm" },
-    { name = "webrtcvad" },
     { name = "websockets" },
 ]
 
@@ -3280,7 +3279,6 @@ requires-dist = [
     { name = "silero-vad", specifier = ">=6.2.0" },
     { name = "torchcodec", specifier = ">=0.9.1" },
     { name = "voxcpm", specifier = ">=1.0.5" },
-    { name = "webrtcvad", specifier = ">=2.0.10" },
     { name = "websockets", specifier = ">=15.0.1" },
 ]
 
@@ -3781,12 +3779,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/5a/fa/2a29ede72355d5ad9
 wheels = [
     { url = "https://files.pythonhosted.org/packages/49/81/d2bb0386b5d2042272ae32d55932fce35e79aa04da73a235db4f030af076/voxcpm-2.0.2-py3-none-any.whl", hash = "sha256:ea31ccc806012d2976f9af880254bbb6d99b41916ff7a1a73ec1a0566576b119", size = 80167, upload-time = "2026-04-08T10:20:02.31Z" },
 ]
-
-[[package]]
-name = "webrtcvad"
-version = "2.0.10"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/89/34/e2de2d97f3288512b9ea56f92e7452f8207eb5a0096500badf9dfd48f5e6/webrtcvad-2.0.10.tar.gz", hash = "sha256:f1bed2fb25b63fb7b1a55d64090c993c9c9167b28485ae0bcdd81cf6ede96aea", size = 66156, upload-time = "2017-01-07T23:05:18.732Z" }
 
 [[package]]
 name = "websockets"
