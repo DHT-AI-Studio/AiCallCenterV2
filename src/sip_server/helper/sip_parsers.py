@@ -2,7 +2,7 @@
 
 import logging
 
-from model.sip_message import (
+from sip_server.model.sip_message import (
     MediaDescription,
     SDPMessage,
     SIPHeaders,
