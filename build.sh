@@ -4,7 +4,9 @@ set -e
 git pull
 
 IMAGE_NAME="sip-server-v2"
-IMAGE_TAG="${1:-latest}"
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+BRANCH_TAG="${BRANCH//\//-}"
+IMAGE_TAG="${1:-$([ "$BRANCH" = "main" ] && echo "latest" || echo "$BRANCH_TAG")}"
 
 echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
 docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
@@ -17,6 +19,6 @@ docker rm ${IMAGE_NAME} 2>/dev/null || true
 echo "> Container deleted"
 
 echo "> Starting new container..."
-docker compose up -d
+IMAGE_TAG="${IMAGE_TAG}" docker compose up -d
 
 echo "> Deployment complete!"

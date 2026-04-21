@@ -1,6 +1,6 @@
 services:
   sip-server:
-    image: sip-server-v2:latest
+    image: sip-server-v2:${IMAGE_TAG:-latest}
     container_name: sip-server
     restart: unless-stopped
 
@@ -11,7 +11,7 @@ services:
 
     network_mode: host
 
-    command: ["/bin/bash", "./run.sh"]
+    command: ["uv", "run", "./src/sip_server/receive_server.py"]
 
     volumes:
       - /opt/home/matthew/Desktop/docker/sip_server/app/output:/app/output

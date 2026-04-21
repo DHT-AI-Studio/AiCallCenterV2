@@ -2,7 +2,7 @@
 
 import logging
 
-from model.sip_message import (
+from sip_server.model.sip_message import (
     MediaDescription,
     SDPMessage,
     SIPHeaders,
@@ -118,14 +118,18 @@ class SipMessageParser:
                 media_descriptions.append(
                     MediaDescription(
                         m=str(media_data.get("media", "")),
-                        i=str(media_data.get("title")),
-                        c=str(media_data.get("connection_info")),
-                        k=str(media_data.get("encryption_key")),
+                        i=str(media_data.get("title")),  # ty:ignore[unknown-argument]
+                        c=str(
+                            media_data.get("connection_info")
+                        ),  # ty:ignore[unknown-argument]
+                        k=str(
+                            media_data.get("encryption_key")
+                        ),  # ty:ignore[unknown-argument]
                     )
                 )
 
         return SDPMessage(
-            **session_data,
+            **session_data,  # ty:ignore[invalid-argument-type]
             media_descriptions=(  # pyright: ignore[reportCallIssue]
                 media_descriptions if media_descriptions else None
             ),

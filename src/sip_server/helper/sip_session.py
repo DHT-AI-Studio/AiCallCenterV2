@@ -5,9 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from secrets import randbelow, randbits
 
-from helper.rtp_handler import RTPHandler
-from model.rtp import PayloadType
-from model.sip_message import MediaDescription, SDPMessage, TimeDescription
+from sip_server.helper.rtp_handler import RTPHandler
+from sip_server.model.rtp import PayloadType
+from sip_server.model.sip_message import MediaDescription, SDPMessage, TimeDescription
 
 
 @dataclass
@@ -77,7 +77,7 @@ class RTPSessionParams:
         media_parts = audio_media.media.split()
 
         if len(media_parts) < 4:
-            raise ValueError(f"Invalid media line: {audio_media.media}")
+            raise ValueError(f"Invalid media line: {audio_media.connection_info}")
 
         media_type = media_parts[0]
         if media_type != "audio":
@@ -233,20 +233,20 @@ class SDPBuilder:
 
         # Build media description
         media_desc = MediaDescription(
-            m=f"audio {local_recv_port} RTP/AVP {offer_params.payload_type}",
-            a=[
+            media=f"audio {local_recv_port} RTP/AVP {offer_params.payload_type}",  # ty:ignore[unknown-argument]
+            attributes=[
                 f"rtpmap:{offer_params.payload_type} {offer_params.codec}/{offer_params.sample_rate}"
             ],
         )
 
         # Build complete SDP
         return SDPMessage(
-            v=0,
-            o=origin,
-            s="-",  # Session name (usually just "-")
-            c=f"IN IP4 {local_ip}",
+            version=0,
+            origin=origin,  # ty:ignore[unknown-argument]
+            session_name="-",  # Session name (usually just "-")
+            connection_info=f"IN IP4 {local_ip}",
             t=[TimeDescription(t="0 0")],  # Active time (0 0 = permanent)
-            m=[media_desc],
+            media_descriptions=[media_desc],
         )
 
 
