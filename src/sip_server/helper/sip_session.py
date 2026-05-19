@@ -236,17 +236,17 @@ class SDPBuilder:
             media=f"audio {local_recv_port} RTP/AVP {offer_params.payload_type}",  # ty:ignore[unknown-argument]
             attributes=[
                 f"rtpmap:{offer_params.payload_type} {offer_params.codec}/{offer_params.sample_rate}"
-            ],
+            ],  # ty:ignore[unknown-argument]
         )
 
         # Build complete SDP
         return SDPMessage(
-            version=0,
+            version=0,  # ty:ignore[unknown-argument]
             origin=origin,  # ty:ignore[unknown-argument]
-            session_name="-",  # Session name (usually just "-")
-            connection_info=f"IN IP4 {local_ip}",
+            session_name="-",  # Session name (usually just "-")  # ty:ignore[unknown-argument]
+            connection_info=f"IN IP4 {local_ip}",  # ty:ignore[unknown-argument]
             t=[TimeDescription(t="0 0")],  # Active time (0 0 = permanent)
-            media_descriptions=[media_desc],
+            media_descriptions=[media_desc],  # ty:ignore[unknown-argument]
         )
 
 
@@ -349,6 +349,7 @@ class SIPRTPSession:
                 self.codec_type = PayloadType.PCMA
 
         self.rtp_handle = RTPHandler(
+            local_ip=self.local_ip,
             local_port=self.local_send_port,
             remote_recv_addr=(self.params.remote_ip, self.params.remote_port),
             ssrc=randbits(32),
@@ -433,8 +434,11 @@ class SIPRTPSession:
             raise ValueError(f"Unknown mode: {mode}. Use 'dummy' or 'wav'")
 
     def update_sending_state(self) -> None:
+        # Polling path: called every listener iteration. An outbound call sits
+        # in self.sessions before 200 OK arrives, so rtp_handle is legitimately
+        # None during early setup — not an error.
         if not self.rtp_handle:
-            raise RuntimeError("Call handle_invite() first")
+            return
 
         self.logger.debug(f"{self.rtp_handle.sender.get_send_queue().qsize()=}")
         self.logger.debug(f"{self.rtp_handle.receiver.get_recv_queue().qsize()=}")
