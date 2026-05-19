@@ -118,21 +118,17 @@ class SipMessageParser:
                 media_descriptions.append(
                     MediaDescription(
                         m=str(media_data.get("media", "")),
-                        i=str(media_data.get("title")),  # ty:ignore[unknown-argument]
-                        c=str(
-                            media_data.get("connection_info")
-                        ),  # ty:ignore[unknown-argument]
-                        k=str(
-                            media_data.get("encryption_key")
-                        ),  # ty:ignore[unknown-argument]
+                        i=str(media_data.get("title")),
+                        c=str(media_data.get("connection_info")),
+                        k=str(media_data.get("encryption_key")),
                     )
                 )
 
         return SDPMessage(
             **session_data,  # ty:ignore[invalid-argument-type]
-            media_descriptions=(  # pyright: ignore[reportCallIssue]
+            media_descriptions=(
                 media_descriptions if media_descriptions else None
-            ),
+            ),  # ty:ignore[unknown-argument]
         )
 
     def _parse_sdp_fields(self, text: str) -> dict[str, str | list[str] | int]:
