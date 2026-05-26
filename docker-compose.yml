@@ -9,7 +9,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
 
-    network_mode: host
+    ports:
+      - 8080:8080
 
     command: ["uv", "run", "./src/sip_server/receive_server.py"]
 
