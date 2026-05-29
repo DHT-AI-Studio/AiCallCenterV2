@@ -89,7 +89,11 @@ class WebsocketServer:
         send_thread.join()
 
     def _run(self) -> None:
-        with serve(self.handler, self.host, self.port) as server:
+        # max_size=None disables the per-frame size cap. Default is 1 MiB, which
+        # truncates the WS connection when the upstream ships a long TTS WAV in
+        # one frame. We trust the internal client; cap-by-default would silently
+        # drop long replies.
+        with serve(self.handler, self.host, self.port, max_size=None) as server:
             self.ws_server = server
             self.logger.info(f"[WebSocket] server started on {self.host}:{self.port}")
             self.ws_server.serve_forever()
