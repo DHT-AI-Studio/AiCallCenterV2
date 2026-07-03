@@ -1,6 +1,6 @@
 # SIP Relay Server v2
 
-> [important]
+> [warning]
 > This Repo combined into <https://github.com/DHT-AI-Studio/rag_cache_server>
 
 A Python-based SIP relay server with advanced AI integration for intelligent voice interactions. Supports SIP signaling, RTP media handling, WebSocket-driven real-time control, and AI-powered audio transcription and response generation. Designed for call routing, audio streaming, SIP integration, and AI-assisted call center functionality.
